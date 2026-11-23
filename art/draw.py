@@ -177,9 +177,9 @@ def render(c, out):
     L, R = 16, W - 16
 
     # top line
-    f = F(SANS_B, 12.5)
-    pg.text(L, 7, c.TOP_LEFT, f, INK)
-    pg.text(R, 7, c.TOP_RIGHT, f, INK, anchor="ra")
+    f = F(SANS_B, 13.5)
+    pg.text(L, 6, c.TOP_LEFT, f, INK)
+    pg.text(R, 6, c.TOP_RIGHT, f, INK, anchor="ra")
     pg.hline(L, R, 25, INK, 1.5)
 
     # masthead
@@ -212,7 +212,7 @@ def render(c, out):
     for i, (t, lab) in enumerate(c.UTC):
         cx = x + cw * i
         pg.text(cx + 5, y + 0, t, F(SANS_B, 14), ACCENT)
-        fl = pg.fit(lab, SANS, 12.5, cw - 9, 11)
+        fl = pg.fit(lab, SANS, 13, cw - 9, 11.5)
         pg.text(cx + 5, y + 18, lab, fl, INK)
         pg.vline(cx, y, y + 34)
     pg.hline(L, R, y + 39, INK, 1.5)
@@ -243,7 +243,7 @@ def render(c, out):
     per = (len(c.TILES) + 1) // 2
     gap = 10
     tw = (R - L - (per - 1) * gap) / per
-    th = 142
+    th = 145
     for i, s in enumerate(c.TILES):
         r_, col = divmod(i, per)
         x0 = L + col * (tw + gap)
@@ -251,7 +251,7 @@ def render(c, out):
         ph = 52
         pg.icon(s["icon"], x0, y0, x0 + tw, y0 + ph)
         if s.get("badge"):
-            pg.badge(s["badge"], x0 + tw, y0 - 3, 16)
+            pg.badge(s["badge"], x0 + tw, y0, 15)
         pg.rect(x0, y0, x0 + tw, y0 + ph, outline=INK, width=1)
         yy = y0 + ph + 4
         xx = pg.tag(s["tag"], x0, yy, 10.5)
@@ -259,7 +259,7 @@ def render(c, out):
         pg.text(xx + 5, yy + 0.5, lab, pg.fit(lab, SANS_B, 12, tw - (xx - x0) - 6, 10.5), INK)
         yy += 20
         yy = pg.para(x0, yy, s["head"], F(SERIF_B, 14.5), tw, 17, INK, maxlines=2)
-        yy = pg.para(x0, yy + 1, s["dek"], F(SANS, 12.5), tw, 15, INK2, maxlines=2)
+        yy = pg.para(x0, yy + 1, s["dek"], F(SANS, 13.5), tw, 16.5, INK, maxlines=2)
     y = y + 2 * th + 6 + 4
     pg.hline(L, R, y, INK, 1.5)
 
@@ -274,39 +274,39 @@ def render(c, out):
     pg.rect(L, my0, L + mw, my1, outline=INK, width=1)
     ly = my1 + 3
     lx = L
-    fl = F(SANS, 11.5)
+    fl = F(SANS, 12.5)
     for j, (reg, cnt) in enumerate(c.REGION_COUNTS):
         if j == 4:
-            lx, ly = L, ly + 14
+            lx, ly = L, ly + 15
         s = "%s %d" % (reg, cnt)
         pg.d.ellipse([lx * K, (ly + 4) * K, (lx + 8) * K, (ly + 12) * K], outline=REGCOL[reg], width=int(2 * K), fill=(255, 255, 255))
-        pg.text(lx + 10, ly, s, fl, INK)
-        lx += pg.tw(s, fl) + 16
+        pg.text(lx + 10, ly - 1, s, fl, INK)
+        lx += pg.tw(s, fl) + 14
 
-    ax = L + mw + 14
-    pg.text(ax, y, c.ALSO_TITLE, F(SANS_B, 13), INK)
-    aw = (R - ax - 12) / 2
-    fb = F(SANS_B, 12.5)
+    ax = L + mw + 16
+    pg.text(ax, y, c.ALSO_TITLE, F(SANS_B, 14), INK)
+    aw = (R - ax - 14) / 2
+    fn, ft = F(SANS_B, 14), F(SANS, 14)
     for i, (num, reg, txt) in enumerate(c.ALSO):
         col, row = divmod(i, rows)
-        xx = ax + col * (aw + 12)
-        yy = y + 18 + row * 16
-        lead = "%d %s: " % (num, reg)
-        pg.text(xx, yy, lead, fb, INK)
-        rest_w = aw - pg.tw(lead, fb)
-        pg.text(xx + pg.tw(lead, fb), yy, txt, pg.fit(txt, SANS, 12.5, rest_w, 11.5), INK)
-    y2 = max(ly + 17, y + 18 + rows * 16 + 2)
+        xx = ax + col * (aw + 14)
+        yy = y + 20 + row * 19
+        pg.d.ellipse([xx * K, (yy + 5) * K, (xx + 9) * K, (yy + 14) * K], fill=REGCOL[reg])
+        pg.text(xx + 14, yy, str(num), fn, INK)
+        tx0 = xx + 14 + pg.tw("00", fn) + 6
+        pg.text(tx0, yy, txt, pg.fit(txt, SANS, 14, xx + aw - tx0, 13), INK)
+    y2 = max(ly + 17, y + 20 + rows * 19 + 1)
     # date check box
-    pg.rect(L, y2, R, y2 + 38, outline=ACCENT, width=1.5)
-    pg.text(L + 7, y2 + 4, "Date", F(SANS_B, 13), ACCENT)
-    pg.text(L + 7, y2 + 19, "check", F(SANS_B, 13), ACCENT)
-    tx = L + 52
-    pg.text(tx, y2 + 4, c.DATECHECK_OUT, pg.fit(c.DATECHECK_OUT, SANS, 12.5, R - tx - 6, 11), INK)
-    pg.text(tx, y2 + 19, c.DATECHECK_NOT_YET, pg.fit(c.DATECHECK_NOT_YET, SANS, 12.5, R - tx - 6, 11), INK)
+    pg.rect(L, y2, R, y2 + 44, outline=ACCENT, width=1.5)
+    pg.text(L + 7, y2 + 5, "Date", F(SANS_B, 14), ACCENT)
+    pg.text(L + 7, y2 + 23, "check", F(SANS_B, 14), ACCENT)
+    tx = L + 56
+    pg.text(tx, y2 + 4, c.DATECHECK_OUT, pg.fit(c.DATECHECK_OUT, SANS, 13.5, R - tx - 6, 12), INK)
+    pg.text(tx, y2 + 23, c.DATECHECK_NOT_YET, pg.fit(c.DATECHECK_NOT_YET, SANS, 13.5, R - tx - 6, 12), INK)
     # footer
-    pg.text(L, y2 + 42, c.LEGEND, pg.fit(c.LEGEND, SANS, 12, R - L, 10.5), INK2)
-    if y2 + 58 > H:
-        raise ValueError("page overflows: %d" % (y2 + 58))
+    pg.text(L, y2 + 48, c.LEGEND, pg.fit(c.LEGEND, SANS, 12.5, R - L, 11), INK2)
+    if y2 + 64 > H:
+        raise ValueError("page overflows: %d" % (y2 + 64))
 
     small = pg.im.resize((W, H), Image.LANCZOS)
     pal = small.quantize(colors=getattr(c, "COLORS", 96), method=Image.MEDIANCUT, dither=Image.NONE)
