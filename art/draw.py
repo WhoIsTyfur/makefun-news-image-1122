@@ -105,6 +105,13 @@ class Page:
         self.rect(x1 - w - 4, y0 + 4, x1 - 4, y0 + 4 + size + 10, fill=(255, 255, 255), outline=INK, width=1)
         self.text(x1 - 4 - w / 2, y0 + 4 + (size + 10) / 2, s, f, INK, anchor="mm")
 
+    def stamp(self, s, x0, y1, size=21):
+        f = F(SANS_B, size)
+        w = self.tw(s, f) + 12
+        h = size + 9
+        self.rect(x0 + 4, y1 - h - 4, x0 + 4 + w, y1 - 4, fill=(255, 255, 255), outline=INK, width=1)
+        self.text(x0 + 4 + w / 2, y1 - 4 - h / 2, s, f, INK, anchor="mm")
+
     def tag(self, label, x, y, size=11.5):
         f = F(SANS_B, size)
         col = TAGCOL[label]
@@ -185,12 +192,15 @@ def render(c, out):
     # masthead
     fm = pg.fit(c.DATE, SERIF_B, 76, R - L, 60)
     pg.text(W / 2, 90, c.DATE, fm, INK, anchor="ms")
-    fs = pg.fit(c.SUBLINE, SERIF_I, 17, R - L, 13)
-    pg.text(W / 2, 115, c.SUBLINE, fs, ACCENT, anchor="ms")
-    pg.hline(L, R, 124, INK, 2)
+    sub = getattr(c, "SUBLINE", "")
+    dy = 0 if sub else -22
+    if sub:
+        fs = pg.fit(sub, SERIF_I, 17, R - L, 13)
+        pg.text(W / 2, 115, sub, fs, ACCENT, anchor="ms")
+    pg.hline(L, R, 124 + dy, INK, 2)
 
     # numbers strip
-    y = 126
+    y = 126 + dy
     n = len(c.NUMBERS)
     cw = (R - L) / n
     for i, (num, lab) in enumerate(c.NUMBERS):
@@ -203,7 +213,7 @@ def render(c, out):
     pg.hline(L, R, y + 55)
 
     # UTC strip
-    y = 186
+    y = 186 + dy
     pg.text(L, y + 1, "The day", F(SANS_B, 13), INK)
     pg.text(L, y + 18, "in UTC", F(SANS_B, 13), INK)
     n = len(c.UTC)
@@ -218,12 +228,12 @@ def render(c, out):
     pg.hline(L, R, y + 39, INK, 1.5)
 
     # leads
-    y = 232
+    y = 232 + dy
     gap = 14
     lw = (R - L - 2 * gap) / 3
     for i, s in enumerate(c.LEADS):
         x0 = L + i * (lw + gap)
-        ph = 108
+        ph = 98
         pg.icon(s["icon"], x0, y, x0 + lw, y + ph)
         if s.get("badge"):
             pg.badge(s["badge"], x0 + lw, y, 22)
@@ -233,9 +243,9 @@ def render(c, out):
         pg.text(xx + 7, yy + 1, "%d · %s" % (i + 1, s["place"]), F(SANS_B, 13), INK)
         yy += 23
         yy = pg.para(x0, yy, s["head"], F(SERIF_B, 20), lw, 23, INK, maxlines=2)
-        yy = pg.para(x0, yy + 3, s["dek"], F(SANS, 14), lw, 17, INK, maxlines=3)
+        yy = pg.para(x0, yy + 3, s["dek"], F(SANS, 14), lw, 17, INK, maxlines=2)
         pg.text(x0, yy + 2, s["src"], F(SANS, 12.5), INK2)
-    y_end = 494
+    y_end = 494 + dy - 29
     pg.hline(L, R, y_end, INK, 1.5)
 
     # tiles: two rows
@@ -243,15 +253,17 @@ def render(c, out):
     per = (len(c.TILES) + 1) // 2
     gap = 10
     tw = (R - L - (per - 1) * gap) / per
-    th = 145
+    th = 140 - dy // 2
     for i, s in enumerate(c.TILES):
         r_, col = divmod(i, per)
         x0 = L + col * (tw + gap)
         y0 = y + r_ * (th + 6)
-        ph = 52
+        ph = 47 - dy // 2
         pg.icon(s["icon"], x0, y0, x0 + tw, y0 + ph)
         if s.get("badge"):
             pg.badge(s["badge"], x0 + tw, y0, 15)
+        if s.get("fact"):
+            pg.stamp(s["fact"], x0, y0 + ph, 19)
         pg.rect(x0, y0, x0 + tw, y0 + ph, outline=INK, width=1)
         yy = y0 + ph + 4
         xx = pg.tag(s["tag"], x0, yy, 10.5)
@@ -269,7 +281,7 @@ def render(c, out):
     mw = 300
     pg.text(L, y, "Where it happened · pins = story numbers", F(SANS_B, 12.5), INK)
     my0 = y + 18
-    my1 = my0 + 100
+    my1 = my0 + 133
     draw_map(pg, L, my0, L + mw, my1, c.PINS)
     pg.rect(L, my0, L + mw, my1, outline=INK, width=1)
     ly = my1 + 3
@@ -286,16 +298,16 @@ def render(c, out):
     ax = L + mw + 16
     pg.text(ax, y, c.ALSO_TITLE, F(SANS_B, 14), INK)
     aw = (R - ax - 14) / 2
-    fn, ft = F(SANS_B, 14), F(SANS, 14)
+    fn = F(SANS_B, 13.5)
     for i, (num, reg, txt) in enumerate(c.ALSO):
         col, row = divmod(i, rows)
         xx = ax + col * (aw + 14)
-        yy = y + 20 + row * 19
+        yy = y + 20 + row * 17
         pg.d.ellipse([xx * K, (yy + 5) * K, (xx + 9) * K, (yy + 14) * K], fill=REGCOL[reg])
         pg.text(xx + 14, yy, str(num), fn, INK)
         tx0 = xx + 14 + pg.tw("00", fn) + 6
-        pg.text(tx0, yy, txt, pg.fit(txt, SANS, 14, xx + aw - tx0, 13), INK)
-    y2 = max(ly + 17, y + 20 + rows * 19 + 1)
+        pg.text(tx0, yy, txt, pg.fit(txt, SANS, 13.5, xx + aw - tx0, 12.5), INK)
+    y2 = max(ly + 17, y + 20 + rows * 17 + 2)
     # date check box
     pg.rect(L, y2, R, y2 + 44, outline=ACCENT, width=1.5)
     pg.text(L + 7, y2 + 5, "Date", F(SANS_B, 14), ACCENT)

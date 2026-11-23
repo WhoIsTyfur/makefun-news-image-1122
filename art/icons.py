@@ -467,6 +467,47 @@ def tank(d, x0, y0, x1, y1, k):
     d.line([p(0.58, 0.50), p(0.94, 0.46)], fill=(70, 80, 60), width=int(7 * k))
 
 
+def hemicycle(d, x0, y0, x1, y1, k, dem=258, rep=173, open_=4):
+    """House seats as a half-circle of dots: blue Democrats, red Republicans, grey undecided."""
+    _bg(d, x0, y0, x1, y1, (236, 240, 246))
+    cx, cy = (x0 + x1) / 2, y1 - (y1 - y0) * 0.10
+    R = min((x1 - x0) * 0.46, (y1 - y0) * 0.82)
+    rows = 9
+    total = dem + rep + open_
+    radii = [R * (0.42 + 0.58 * r / (rows - 1)) for r in range(rows)]
+    weights = sum(radii)
+    seats = []
+    left = total
+    for j, r in enumerate(radii):
+        n = round(total * r / weights) if j < rows - 1 else left
+        left -= n
+        for m in range(n):
+            a = math.pi * (1 - (m + 0.5) / n)
+            seats.append((a, cx + r * math.cos(a), cy - r * math.sin(a)))
+    seats.sort(key=lambda t: -t[0])
+    dot = R * 0.045
+    for idx, (_, sx, sy) in enumerate(seats):
+        col = BLUE if idx < dem else ((150, 150, 156) if idx < dem + open_ else RED)
+        d.ellipse([sx - dot, sy - dot, sx + dot, sy + dot], fill=col)
+
+
+def capsized(d, x0, y0, x1, y1, k):
+    _bg(d, x0, y0, x1, y1, (176, 196, 214))
+    p = _rel(x0, y0, x1, y1)
+    a, b = p(0.62, 0.20), p(0.98, 0.58)
+    d.rectangle([a[0], a[1], b[0], b[1]], fill=(206, 200, 188))
+    for fx in (0.68, 0.78, 0.88):
+        u, v = p(fx, 0.30), p(fx + 0.05, 0.40)
+        d.rectangle([u[0], u[1], v[0], v[1]], fill=(150, 146, 138))
+    d.polygon([p(0.10, 0.62), p(0.30, 0.22), p(0.40, 0.30), p(0.30, 0.62)], fill=(80, 84, 92))
+    d.polygon([p(0.30, 0.22), p(0.40, 0.30), p(0.37, 0.40), p(0.27, 0.32)], fill=(150, 40, 40))
+    a, b = p(0, 0.58), p(1, 1)
+    d.rectangle([a[0], a[1], b[0], b[1]], fill=SEA)
+    for j in range(4):
+        u = p(0.05 + j * 0.24, 0.66)
+        d.arc([u[0], u[1], u[0] + 34 * k, u[1] + 12 * k], 180, 360, fill=WHITE, width=int(2 * k))
+
+
 ICONS = {
     "drones": drones, "summit": summit, "radar": radar, "ballot": ballot,
     "cricket": cricket, "racecar": racecar, "ship": ship, "power": power,
@@ -480,5 +521,6 @@ ICONS = {
     "rugby": lambda d, *a: ball(d, *a, sport="rugby"),
     "basketball": lambda d, *a: ball(d, *a, sport="basketball"),
     "boat": lambda d, *a: ship(d, *a, fire=False),
+    "hemicycle": hemicycle, "capsized": capsized,
     "chart_down": lambda d, *a: chart(d, *a, up=False),
 }
