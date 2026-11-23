@@ -63,9 +63,26 @@ def drones(d, x0, y0, x1, y1, k):
         d.polygon([(cx - s, cy), (cx + s, cy - s * 0.35), (cx + s * 0.4, cy), (cx + s, cy + s * 0.35)], fill=WHITE)
         d.line([cx + s, cy, cx + s * 3, cy - s * 0.5], fill=(255, 170, 80), width=int(2 * k))
     city(d, x0, y0, x1, y1, k)
-    fx, fy = p(0.33, 0.66)
-    d.ellipse([fx - 16 * k, fy - 16 * k, fx + 16 * k, fy + 16 * k], fill=ORANGE)
-    d.ellipse([fx - 8 * k, fy - 8 * k, fx + 8 * k, fy + 8 * k], fill=YELLOW)
+    # the hit block: a five-storey building with one section collapsed, smoke above
+    bx0, by0 = p(0.30, 0.40)
+    bx1, by1 = p(0.58, 1.0)
+    d.rectangle([bx0, by0, bx1, by1], fill=(70, 74, 88))
+    fl = (by1 - by0) / 5
+    for r in range(5):
+        for cc in range(4):
+            wx = bx0 + (cc + 0.3) * (bx1 - bx0) / 4
+            wy = by0 + (r + 0.3) * fl
+            d.rectangle([wx, wy, wx + 6 * k, wy + 6 * k], fill=YELLOW)
+    gx0, gx1 = bx0 + (bx1 - bx0) * 0.48, bx0 + (bx1 - bx0) * 0.78
+    d.polygon([(gx0, by0 - 1), (gx1, by0 - 1), (gx1, by1 - fl * 1.2), (gx1 - 8 * k, by1 - fl * 0.6),
+               (gx0 + 6 * k, by1 - fl * 1.6), (gx0, by1 - fl * 0.8)], fill=NIGHT)
+    d.polygon([(gx0 - 4 * k, by1), (gx0 + 10 * k, by1 - fl * 0.9), (gx1 - 4 * k, by1 - fl * 0.7), (gx1 + 6 * k, by1)], fill=(110, 104, 98))
+    for j, (sx, sy, r) in enumerate(((0.47, 0.30, 16), (0.52, 0.20, 13), (0.45, 0.12, 10))):
+        cx, cy = p(sx, sy)
+        d.ellipse([cx - r * k, cy - r * 0.8 * k, cx + r * k, cy + r * 0.8 * k], fill=(120, 120, 130))
+    fx, fy = p(0.50, 0.52)
+    d.ellipse([fx - 10 * k, fy - 10 * k, fx + 10 * k, fy + 10 * k], fill=ORANGE)
+    d.ellipse([fx - 5 * k, fy - 5 * k, fx + 5 * k, fy + 5 * k], fill=YELLOW)
 
 
 def summit(d, x0, y0, x1, y1, k):
@@ -86,6 +103,14 @@ def summit(d, x0, y0, x1, y1, k):
         d.rectangle([hx - 11 * k, hy - 8 * k, hx + 11 * k, hy], fill=DARK)
     a, b = p(0, 0.80), p(1, 1)
     d.rectangle([a[0], a[1], b[0], b[1]], fill=(210, 196, 168))
+    # the rejected draft: a page of text struck through
+    a, b = p(0.06, 0.08), p(0.22, 0.62)
+    d.rectangle([a[0], a[1], b[0], b[1]], fill=WHITE, outline=GREY, width=int(2 * k))
+    for j in range(6):
+        u, v = p(0.08, 0.16 + j * 0.075), p(0.20 - 0.03 * (j % 2), 0.16 + j * 0.075)
+        d.line([u, v], fill=GREY, width=int(2 * k))
+    d.line([p(0.05, 0.10), p(0.23, 0.60)], fill=RED, width=int(5 * k))
+    d.line([p(0.23, 0.10), p(0.05, 0.60)], fill=RED, width=int(5 * k))
 
 
 def radar(d, x0, y0, x1, y1, k):

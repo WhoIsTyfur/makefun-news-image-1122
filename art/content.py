@@ -1,6 +1,6 @@
 ﻿"""Every word on the page. Facts and sources: research/sources-2026-11-22.md."""
 
-TOP_LEFT = "THE WORLD IN ONE DAY · THE WHOLE DAY, 00:00 TO 24:00 UTC"
+TOP_LEFT = "Made after the day ended: all 24 hours, 00:00 to 24:00 UTC"
 TOP_RIGHT = "33 stories · 7 regions · 11 fields · all from Sunday 22 Nov"
 DATE = "Sunday 22 November 2026"
 SUBLINE = ""
@@ -111,5 +111,4 @@ DATECHECK_NOT_YET = ("Not shown, came after Sunday: Kyiv says it struck Benghazi
                      "· Belgian strike (Mon 23)")
 LEGEND = ("CONFIRMED = 2+ outlets · OFFICIAL = on the record · CLAIM = one side's account, attributed · "
           "outlets named under each lead. Pictures are drawn, not photographs.")
-
 COLORS = 128
