@@ -105,9 +105,11 @@ class Page:
         self.rect(x1 - w - 4, y0 + 4, x1 - 4, y0 + 4 + size + 10, fill=(255, 255, 255), outline=INK, width=1)
         self.text(x1 - 4 - w / 2, y0 + 4 + (size + 10) / 2, s, f, INK, anchor="mm")
 
-    def stamp(self, s, x0, y1, size=21):
+    def stamp(self, s, x0, y1, size=21, right=None):
         f = F(SANS_B, size)
         w = self.tw(s, f) + 12
+        if right is not None:
+            x0 = right - w - 8
         h = size + 9
         self.rect(x0 + 4, y1 - h - 4, x0 + 4 + w, y1 - 4, fill=(255, 255, 255), outline=INK, width=1)
         self.text(x0 + 4 + w / 2, y1 - 4 - h / 2, s, f, INK, anchor="mm")
@@ -263,7 +265,7 @@ def render(c, out):
         if s.get("badge"):
             pg.badge(s["badge"], x0 + tw, y0, 15)
         if s.get("fact"):
-            pg.stamp(s["fact"], x0, y0 + ph, 19)
+            pg.stamp(s["fact"], x0, y0 + ph, 19, right=x0 + tw if s.get("fact_right", True) else None)
         pg.rect(x0, y0, x0 + tw, y0 + ph, outline=INK, width=1)
         yy = y0 + ph + 4
         xx = pg.tag(s["tag"], x0, yy, 10.5)

@@ -171,7 +171,7 @@ def ball(d, x0, y0, x1, y1, k, sport="football"):
         d.rectangle([a[0], a[1], b[0], b[1]], outline=WHITE, width=int(3 * k))
         m1, m2 = p(0.5, 0.12), p(0.5, 0.95)
         d.line([m1, m2], fill=WHITE, width=int(4 * k))
-        bx, by = p(0.72, 0.45)
+        bx, by = p(0.28, 0.45)
         rb = (y1 - y0) * 0.20
         d.ellipse([bx - rb, by - rb, bx + rb, by + rb], fill=(214, 230, 50), outline=DARK, width=int(2 * k))
         d.arc([bx - rb * 1.9, by - rb, bx + rb * 0.1, by + rb], -50, 50, fill=WHITE, width=int(3 * k))
@@ -508,6 +508,74 @@ def capsized(d, x0, y0, x1, y1, k):
         d.arc([u[0], u[1], u[0] + 34 * k, u[1] + 12 * k], 180, 360, fill=WHITE, width=int(2 * k))
 
 
+def launch(d, x0, y0, x1, y1, k):
+    """Rocket lifting off its pad beside a tower, with an exhaust plume."""
+    _bg(d, x0, y0, x1, y1, (40, 56, 96))
+    p = _rel(x0, y0, x1, y1)
+    for j in range(10):
+        sx, sy = p(((j * 0.41) % 1), ((j * 0.29) % 1) * 0.4)
+        d.ellipse([sx - 1.5 * k, sy - 1.5 * k, sx + 1.5 * k, sy + 1.5 * k], fill=WHITE)
+    a, b = p(0.12, 0.12), p(0.18, 0.92)
+    d.rectangle([a[0], a[1], b[0], b[1]], fill=(120, 120, 128))
+    for j in range(6):
+        u, v = p(0.12, 0.18 + j * 0.12), p(0.18, 0.24 + j * 0.12)
+        d.line([u, v], fill=(80, 80, 88), width=int(2 * k))
+    cx = p(0.36, 0)[0]
+    top, bot = p(0, 0.06)[1], p(0, 0.60)[1]
+    w = 9 * k
+    d.rectangle([cx - w, top + 12 * k, cx + w, bot], fill=WHITE)
+    d.polygon([(cx - w, top + 12 * k), (cx, top), (cx + w, top + 12 * k)], fill=WHITE)
+    d.rectangle([cx - w, top + 30 * k, cx + w, top + 34 * k], fill=(30, 30, 30))
+    d.polygon([(cx - w * 0.8, bot), (cx, bot + (y1 - y0) * 0.22), (cx + w * 0.8, bot)], fill=ORANGE)
+    d.polygon([(cx - w * 0.4, bot), (cx, bot + (y1 - y0) * 0.12), (cx + w * 0.4, bot)], fill=YELLOW)
+    for j, fx in enumerate((0.20, 0.29, 0.38, 0.47, 0.56)):
+        u = p(fx, 0.90)
+        r = (16 + 6 * (j % 2)) * k
+        d.ellipse([u[0] - r, u[1] - r * 0.7, u[0] + r, u[1] + r * 0.7], fill=(226, 226, 230))
+    a, b = p(0, 0.94), p(1, 1)
+    d.rectangle([a[0], a[1], b[0], b[1]], fill=(60, 60, 66))
+
+
+def tent(d, x0, y0, x1, y1, k):
+    """Field hospital tent with a red cross, under a grey sky."""
+    _bg(d, x0, y0, x1, y1, (210, 216, 222))
+    p = _rel(x0, y0, x1, y1)
+    a, b = p(0, 0.80), p(1, 1)
+    d.rectangle([a[0], a[1], b[0], b[1]], fill=(150, 120, 90))
+    d.polygon([p(0.10, 0.84), p(0.30, 0.22), p(0.62, 0.22), p(0.82, 0.84)], fill=WHITE, outline=GREY)
+    d.polygon([p(0.38, 0.84), p(0.46, 0.50), p(0.54, 0.84)], fill=(70, 70, 76))
+    cx, cy = p(0.46, 0.36)
+    s = (y1 - y0) * 0.09
+    d.rectangle([cx - s * 0.35, cy - s, cx + s * 0.35, cy + s], fill=RED)
+    d.rectangle([cx - s, cy - s * 0.35, cx + s, cy + s * 0.35], fill=RED)
+    vx, vy = p(0.88, 0.30)
+    r = (y1 - y0) * 0.11
+    for a_ in range(0, 360, 45):
+        ex, ey = vx + r * 1.5 * math.cos(math.radians(a_)), vy + r * 1.5 * math.sin(math.radians(a_))
+        d.line([vx, vy, ex, ey], fill=GREEN, width=int(2 * k))
+    d.ellipse([vx - r, vy - r, vx + r, vy + r], fill=(90, 160, 110))
+
+
+def tv(d, x0, y0, x1, y1, k):
+    """A TV interview: a screen showing a speaker before a US flag."""
+    _bg(d, x0, y0, x1, y1, (226, 222, 214))
+    p = _rel(x0, y0, x1, y1)
+    a, b = p(0.18, 0.08), p(0.82, 0.86)
+    d.rounded_rectangle([a[0], a[1], b[0], b[1]], radius=6 * k, fill=(30, 30, 34))
+    a, b = p(0.22, 0.14), p(0.78, 0.78)
+    d.rectangle([a[0], a[1], b[0], b[1]], fill=(32, 60, 120))
+    for j in range(5):
+        u, v = p(0.50, 0.18 + j * 0.10), p(0.76, 0.23 + j * 0.10)
+        d.rectangle([u[0], u[1], v[0], v[1]], fill=RED if j % 2 == 0 else WHITE)
+    u, v = p(0.24, 0.16), p(0.48, 0.40)
+    d.rectangle([u[0], u[1], v[0], v[1]], fill=(40, 70, 140))
+    hx, hy = p(0.40, 0.42)
+    r = (y1 - y0) * 0.11
+    d.ellipse([hx - r, hy - r, hx + r, hy + r], fill=(222, 180, 140))
+    d.pieslice([hx - r * 2.2, hy + r * 0.8, hx + r * 2.2, hy + r * 4.6], 180, 360, fill=(30, 36, 60))
+    d.rectangle([p(0.46, 0.86)[0], p(0, 0.86)[1], p(0.54, 0)[0], p(0, 0.94)[1]], fill=(30, 30, 34))
+
+
 ICONS = {
     "drones": drones, "summit": summit, "radar": radar, "ballot": ballot,
     "cricket": cricket, "racecar": racecar, "ship": ship, "power": power,
@@ -521,6 +589,7 @@ ICONS = {
     "rugby": lambda d, *a: ball(d, *a, sport="rugby"),
     "basketball": lambda d, *a: ball(d, *a, sport="basketball"),
     "boat": lambda d, *a: ship(d, *a, fire=False),
+    "launch": launch, "tent": tent, "tv": tv,
     "hemicycle": hemicycle, "capsized": capsized,
     "chart_down": lambda d, *a: chart(d, *a, up=False),
 }
